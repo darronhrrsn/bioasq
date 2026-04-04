@@ -201,19 +201,6 @@ class Entry(Base):
         "polymorphic_identity": "entry",
     }
 
-
-class EPEntry(Entry):
-    __mapper_args__ = {"polymorphic_identity": "ep"}
-
-
-class LasigeBioTMEntry(Entry):
-    __mapper_args__ = {"polymorphic_identity": "lasigebiotm"}
-
-
-class ARBEntry(Entry):
-    __mapper_args__ = {"polymorphic_identity": "arb"}
-
-
 class Judge(Base):
     __tablename__ = "judge"
 
