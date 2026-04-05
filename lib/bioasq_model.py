@@ -11,8 +11,8 @@ from sqlalchemy import (
     ForeignKeyConstraint,
     Index,
     Integer,
-    String,
     Text,
+    and_,
     create_engine,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
@@ -34,7 +34,7 @@ class Batch(Base):
         DateTime, nullable=False, default=datetime.utcnow
     )
 
-    questions: Mapped[list[Question]] = relationship(
+    questions: Mapped[list["Question"]] = relationship(
         back_populates="batch", cascade="all, delete-orphan"
     )
 
@@ -53,22 +53,22 @@ class Question(Base):
     type_extra: Mapped[Optional[str]] = mapped_column(Text)
     duplicate_tmp_json: Mapped[Optional[str]] = mapped_column(Text)
 
-    batch: Mapped[Batch] = relationship(back_populates="questions")
-    documents: Mapped[list[QuestionDocument]] = relationship(
+    batch: Mapped["Batch"] = relationship(back_populates="questions")
+    documents: Mapped[list["QuestionDocument"]] = relationship(
         back_populates="question", cascade="all, delete-orphan"
     )
-    snippets: Mapped[list[QuestionSnippet]] = relationship(
+    snippets: Mapped[list["QuestionSnippet"]] = relationship(
         back_populates="question", cascade="all, delete-orphan"
     )
-    ideal_answers: Mapped[list[QuestionIdealAnswer]] = relationship(
+    ideal_answers: Mapped[list["QuestionIdealAnswer"]] = relationship(
         back_populates="question", cascade="all, delete-orphan"
     )
-    exact_answers: Mapped[list[QuestionExactAnswer]] = relationship(
+    exact_answers: Mapped[list["QuestionExactAnswer"]] = relationship(
         back_populates="question", cascade="all, delete-orphan"
     )
-    predictions: Mapped[list[Prediction]] = relationship(back_populates="question")
-    judge_scores: Mapped[list[JudgeScore]] = relationship(back_populates="question")
-    rouge_scores: Mapped[list[RougeScore]] = relationship(back_populates="question")
+    predictions: Mapped[list["Prediction"]] = relationship(back_populates="question")
+    judge_scores: Mapped[list["JudgeScore"]] = relationship(back_populates="question")
+    rouge_scores: Mapped[list["RougeScore"]] = relationship(back_populates="question")
 
 
 Index("idx_question_batch_id", Question.batch_id)
@@ -85,7 +85,7 @@ class QuestionDocument(Base):
     document_url: Mapped[str] = mapped_column(Text, nullable=False)
     ordinal: Mapped[int] = mapped_column(Integer, nullable=False)
 
-    question: Mapped[Question] = relationship(back_populates="documents")
+    question: Mapped["Question"] = relationship(back_populates="documents")
 
     __table_args__ = (
         Index("idx_question_document_question_id", "question_id"),
@@ -119,7 +119,7 @@ class QuestionSnippet(Base):
     offset_in_end_section: Mapped[Optional[int]] = mapped_column(Integer)
     text: Mapped[str] = mapped_column(Text, nullable=False)
 
-    question: Mapped[Question] = relationship(back_populates="snippets")
+    question: Mapped["Question"] = relationship(back_populates="snippets")
 
     __table_args__ = (
         Index("idx_question_snippet_question_id", "question_id"),
@@ -142,7 +142,7 @@ class QuestionIdealAnswer(Base):
     ordinal: Mapped[int] = mapped_column(Integer, nullable=False)
     answer_text: Mapped[str] = mapped_column(Text, nullable=False)
 
-    question: Mapped[Question] = relationship(back_populates="ideal_answers")
+    question: Mapped["Question"] = relationship(back_populates="ideal_answers")
 
     __table_args__ = (
         Index("idx_question_ideal_answer_question_id", "question_id"),
@@ -166,7 +166,7 @@ class QuestionExactAnswer(Base):
     answer_item: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     answer_text: Mapped[str] = mapped_column(Text, nullable=False)
 
-    question: Mapped[Question] = relationship(back_populates="exact_answers")
+    question: Mapped["Question"] = relationship(back_populates="exact_answers")
 
     __table_args__ = (
         Index("idx_question_exact_answer_question_id", "question_id"),
@@ -192,14 +192,15 @@ class Entry(Base):
         DateTime, nullable=False, default=datetime.utcnow
     )
 
-    predictions: Mapped[list[Prediction]] = relationship(back_populates="entry")
-    judge_scores: Mapped[list[JudgeScore]] = relationship(back_populates="entry")
-    rouge_scores: Mapped[list[RougeScore]] = relationship(back_populates="entry")
+    predictions: Mapped[list["Prediction"]] = relationship(back_populates="entry")
+    judge_scores: Mapped[list["JudgeScore"]] = relationship(back_populates="entry")
+    rouge_scores: Mapped[list["RougeScore"]] = relationship(back_populates="entry")
 
     __mapper_args__ = {
         "polymorphic_on": label,
         "polymorphic_identity": "entry",
     }
+
 
 class Judge(Base):
     __tablename__ = "judge"
@@ -212,7 +213,7 @@ class Judge(Base):
         DateTime, nullable=False, default=datetime.utcnow
     )
 
-    judge_scores: Mapped[list[JudgeScore]] = relationship(back_populates="judge")
+    judge_scores: Mapped[list["JudgeScore"]] = relationship(back_populates="judge")
 
 
 class Run(Base):
@@ -230,13 +231,13 @@ class Run(Base):
     file_prefix: Mapped[Optional[str]] = mapped_column(Text)
     notes: Mapped[Optional[str]] = mapped_column(Text)
 
-    predictions: Mapped[list[Prediction]] = relationship(
+    predictions: Mapped[list["Prediction"]] = relationship(
         back_populates="run", cascade="all, delete-orphan"
     )
-    judge_scores: Mapped[list[JudgeScore]] = relationship(
+    judge_scores: Mapped[list["JudgeScore"]] = relationship(
         back_populates="run", cascade="all, delete-orphan"
     )
-    rouge_scores: Mapped[list[RougeScore]] = relationship(
+    rouge_scores: Mapped[list["RougeScore"]] = relationship(
         back_populates="run", cascade="all, delete-orphan"
     )
 
@@ -263,14 +264,29 @@ class Prediction(Base):
         DateTime, nullable=False, default=datetime.utcnow
     )
 
-    run: Mapped[Run] = relationship(back_populates="predictions")
-    entry: Mapped[Entry] = relationship(back_populates="predictions")
-    question: Mapped[Question] = relationship(back_populates="predictions")
-    judge_scores: Mapped[list[JudgeScore]] = relationship(
-        back_populates="prediction", cascade="all, delete-orphan"
+    run: Mapped["Run"] = relationship(back_populates="predictions")
+    entry: Mapped["Entry"] = relationship(back_populates="predictions")
+    question: Mapped["Question"] = relationship(back_populates="predictions")
+
+    judge_scores: Mapped[list["JudgeScore"]] = relationship(
+        "JudgeScore",
+        primaryjoin=lambda: and_(
+            Prediction.run_id == JudgeScore.run_id,
+            Prediction.entry_id == JudgeScore.entry_id,
+            Prediction.question_id == JudgeScore.question_id,
+        ),
+        back_populates="prediction",
+        viewonly=True,
     )
-    rouge_scores: Mapped[list[RougeScore]] = relationship(
-        back_populates="prediction", cascade="all, delete-orphan"
+    rouge_scores: Mapped[list["RougeScore"]] = relationship(
+        "RougeScore",
+        primaryjoin=lambda: and_(
+            Prediction.run_id == RougeScore.run_id,
+            Prediction.entry_id == RougeScore.entry_id,
+            Prediction.question_id == RougeScore.question_id,
+        ),
+        back_populates="prediction",
+        viewonly=True,
     )
 
     __table_args__ = (
@@ -312,18 +328,19 @@ class JudgeScore(Base):
         DateTime, nullable=False, default=datetime.utcnow
     )
 
-    run: Mapped[Run] = relationship(back_populates="judge_scores")
-    entry: Mapped[Entry] = relationship(back_populates="judge_scores")
-    judge: Mapped[Judge] = relationship(back_populates="judge_scores")
-    question: Mapped[Question] = relationship(back_populates="judge_scores")
-    prediction: Mapped[Prediction] = relationship(
-        back_populates="judge_scores",
-        primaryjoin=(
-            "and_(JudgeScore.run_id == Prediction.run_id, "
-            "JudgeScore.entry_id == Prediction.entry_id, "
-            "JudgeScore.question_id == Prediction.question_id)"
+    run: Mapped["Run"] = relationship(back_populates="judge_scores")
+    entry: Mapped["Entry"] = relationship(back_populates="judge_scores")
+    judge: Mapped["Judge"] = relationship(back_populates="judge_scores")
+    question: Mapped["Question"] = relationship(back_populates="judge_scores")
+    prediction: Mapped[Optional["Prediction"]] = relationship(
+        "Prediction",
+        primaryjoin=lambda: and_(
+            JudgeScore.run_id == Prediction.run_id,
+            JudgeScore.entry_id == Prediction.entry_id,
+            JudgeScore.question_id == Prediction.question_id,
         ),
-        foreign_keys=lambda: [JudgeScore.run_id, JudgeScore.entry_id, JudgeScore.question_id],
+        back_populates="judge_scores",
+        viewonly=True,
     )
 
     __table_args__ = (
@@ -387,17 +404,18 @@ class RougeScore(Base):
         DateTime, nullable=False, default=datetime.utcnow
     )
 
-    run: Mapped[Run] = relationship(back_populates="rouge_scores")
-    entry: Mapped[Entry] = relationship(back_populates="rouge_scores")
-    question: Mapped[Question] = relationship(back_populates="rouge_scores")
-    prediction: Mapped[Prediction] = relationship(
-        back_populates="rouge_scores",
-        primaryjoin=(
-            "and_(RougeScore.run_id == Prediction.run_id, "
-            "RougeScore.entry_id == Prediction.entry_id, "
-            "RougeScore.question_id == Prediction.question_id)"
+    run: Mapped["Run"] = relationship(back_populates="rouge_scores")
+    entry: Mapped["Entry"] = relationship(back_populates="rouge_scores")
+    question: Mapped["Question"] = relationship(back_populates="rouge_scores")
+    prediction: Mapped[Optional["Prediction"]] = relationship(
+        "Prediction",
+        primaryjoin=lambda: and_(
+            RougeScore.run_id == Prediction.run_id,
+            RougeScore.entry_id == Prediction.entry_id,
+            RougeScore.question_id == Prediction.question_id,
         ),
-        foreign_keys=lambda: [RougeScore.run_id, RougeScore.entry_id, RougeScore.question_id],
+        back_populates="rouge_scores",
+        viewonly=True,
     )
 
     __table_args__ = (
