@@ -205,6 +205,12 @@ class Entry(Base):
 class Judge(Base):
     __tablename__ = "judge"
 
+    __mapper_args__ = {
+        "polymorphic_on": label,
+        "polymorphic_identity": "judge",
+    }
+
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     label: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     model_id: Mapped[str] = mapped_column(Text, nullable=False)
