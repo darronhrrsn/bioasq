@@ -206,7 +206,7 @@ class Judge(Base):
     __tablename__ = "judge"
 
     __mapper_args__ = {
-        "polymorphic_on": label,
+        "polymorphic_on": load_extended,
         "polymorphic_identity": "judge",
     }
 
