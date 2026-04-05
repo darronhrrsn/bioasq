@@ -260,6 +260,9 @@ class Prediction(Base):
     prediction_ideal: Mapped[Optional[str]] = mapped_column(Text)
     selected_snippet_json: Mapped[Optional[str]] = mapped_column(Text)
     generation_seconds: Mapped[Optional[float]] = mapped_column(Float)
+    generated_in: Mapped[Optional[float]] = mapped_column(Float)
+    tokens_returned: Mapped[Optional[int]] = mapped_column(Integer)
+    
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, default=datetime.utcnow
     )
