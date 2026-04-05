@@ -197,7 +197,7 @@ class Entry(Base):
     rouge_scores: Mapped[list[RougeScore]] = relationship(back_populates="entry")
 
     __mapper_args__ = {
-        "polymorphic_on": entry_type,
+        "polymorphic_on": label,
         "polymorphic_identity": "entry",
     }
 
