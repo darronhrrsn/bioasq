@@ -261,7 +261,7 @@ class Prediction(Base):
     selected_snippet_json: Mapped[Optional[str]] = mapped_column(Text)
     generation_seconds: Mapped[Optional[float]] = mapped_column(Float)
     generated_in: Mapped[Optional[float]] = mapped_column(Float)
-    tokens_returned: Mapped[Optional[int]] = mapped_column(Integer)
+    tokens_generated: Mapped[Optional[int]] = mapped_column(Integer)
     gpu_type: Mapped[Optional[str]] = mapped_column(Text)
     
     created_at: Mapped[datetime] = mapped_column(
