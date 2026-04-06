@@ -205,12 +205,6 @@ class Entry(Base):
 class Judge(Base):
     __tablename__ = "judge"
 
-    __mapper_args__ = {
-        "polymorphic_on": load_extended,
-        "polymorphic_identity": "judge",
-    }
-
-
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     label: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     model_id: Mapped[str] = mapped_column(Text, nullable=False)
@@ -221,6 +215,12 @@ class Judge(Base):
     )
 
     judge_scores: Mapped[list["JudgeScore"]] = relationship(back_populates="judge")
+
+    __mapper_args__ = {
+        "polymorphic_on": load_extended,
+        "polymorphic_identity": "judge",
+    }
+
 
 
 class Run(Base):
