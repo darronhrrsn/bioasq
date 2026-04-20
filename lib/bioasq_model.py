@@ -270,7 +270,18 @@ class Prediction(Base):
     generated_in: Mapped[Optional[float]] = mapped_column(Float)
     tokens_generated: Mapped[Optional[int]] = mapped_column(Integer)
     gpu_type: Mapped[Optional[str]] = mapped_column(Text)
-    
+    answer_char_count: Mapped[Optional[int]] = mapped_column(Integer)
+    answer_token_count: Mapped[Optional[int]] = mapped_column(Integer)
+    sentence_count: Mapped[Optional[int]] = mapped_column(Integer)
+    avg_sentence_length: Mapped[Optional[float]] = mapped_column(Float)
+    type_token_ratio: Mapped[Optional[float]] = mapped_column(Float)
+    repeated_bigram_rate: Mapped[Optional[float]] = mapped_column(Float)
+    repeated_trigram_rate: Mapped[Optional[float]] = mapped_column(Float)
+    duplicate_sentence_rate: Mapped[Optional[float]] = mapped_column(Float)
+    biomed_entity_count: Mapped[Optional[int]] = mapped_column(Integer)
+    unique_biomed_entity_count: Mapped[Optional[int]] = mapped_column(Integer)
+    biomed_entity_density: Mapped[Optional[float]] = mapped_column(Float)
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, default=datetime.utcnow
     )
