@@ -232,13 +232,19 @@ class Model(Base):
     model_id: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     provider: Mapped[Optional[str]] = mapped_column(Text)
     notes: Mapped[Optional[str]] = mapped_column(Text)
-
+    model_type: Mapped[str] = mapped_column(Text, nullable=False, default="local")
+    
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         nullable=False,
         default=datetime.utcnow,
         server_default=text("CURRENT_TIMESTAMP"),
     )
+
+    __mapper_args__ = {
+        "polymorphic_on": model_type,
+        "polymorphic_identity": "model",
+    }
 
     entry_batch_models: Mapped[list["EntryBatchModel"]] = relationship(
         back_populates="model",
