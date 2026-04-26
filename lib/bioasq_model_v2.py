@@ -284,11 +284,6 @@ class Entry(Base):
         cascade="all, delete-orphan",
     )
 
-    predictions: Mapped[list["Prediction"]] = relationship(
-        back_populates="entry",
-        passive_deletes=True,
-    )
-
     __mapper_args__ = {
         "polymorphic_on": entry_type,
         "polymorphic_identity": "entry",
