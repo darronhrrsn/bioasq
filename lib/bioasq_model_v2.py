@@ -450,8 +450,8 @@ class Prediction(Base):
         nullable=False,
     )
 
-    entry_id: Mapped[int] = mapped_column(
-        ForeignKey("entry.id", ondelete="RESTRICT"),
+    entry_batch_model_id: Mapped[int] = mapped_column(
+        ForeignKey("entry_batch_model.id", ondelete="CASCADE"),
         nullable=False,
     )
 
@@ -490,7 +490,7 @@ class Prediction(Base):
     )
 
     run: Mapped["Run"] = relationship(back_populates="predictions")
-    entry: Mapped["Entry"] = relationship(back_populates="predictions")
+    entry_batch_model: Mapped["EntryBatchModel"] = relationship(back_populates="predictions")
     question: Mapped["Question"] = relationship(back_populates="predictions")
 
     judge_scores: Mapped[list["JudgeScore"]] = relationship(
@@ -506,13 +506,13 @@ class Prediction(Base):
 
     __table_args__ = (
         Index("idx_prediction_run_id", "run_id"),
-        Index("idx_prediction_entry_id", "entry_id"),
+        Index("idx_prediction_entry_batch_model_id", "entry_batch_model_id"),
         Index("idx_prediction_question_id", "question_id"),
         UniqueConstraint(
             "run_id",
-            "entry_id",
+            "entry_batch_model_id",
             "question_id",
-            name="uq_prediction_run_entry_question",
+            name="uq_prediction_run_ebm_question",
         ),
     )
 
