@@ -350,6 +350,11 @@ class EntryBatchModel(Base):
         server_default=text("CURRENT_TIMESTAMP"),
     )
 
+    predictions: Mapped[list["Prediction"]] = relationship(
+        back_populates="entry_batch_model",
+        passive_deletes=True,
+    )
+
     entry: Mapped["Entry"] = relationship(back_populates="entry_batch_models")
     batch: Mapped["Batch"] = relationship(back_populates="entry_batch_models")
     model: Mapped["Model"] = relationship(back_populates="entry_batch_models")
