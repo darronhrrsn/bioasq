@@ -289,6 +289,11 @@ class Entry(Base):
         passive_deletes=True,
     )
 
+    __mapper_args__ = {
+        "polymorphic_on": entry_type,
+        "polymorphic_identity": "entry",
+    }
+
 
 Index("idx_entry_label", Entry.label)
 
