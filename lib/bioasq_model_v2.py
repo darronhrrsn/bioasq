@@ -403,6 +403,20 @@ class Judge(Base):
         server_default=text("0"),
     )
 
+    score_descriptors_existing: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+        server_default=text("0"),
+    )
+
+    reference_answer_existing: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+        server_default=text("0"),
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         nullable=False,
@@ -416,10 +430,6 @@ class Judge(Base):
         back_populates="judge",
         passive_deletes=True,
     )
-
-    __mapper_args__ = {
-        "polymorphic_on": label,
-    }
 
 
 Index("idx_judge_label", Judge.label)
