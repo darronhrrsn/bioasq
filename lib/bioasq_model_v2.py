@@ -399,8 +399,8 @@ class Judge(Base):
     load_extended: Mapped[int] = mapped_column(
         Integer,
         nullable=False,
-        default=0,
-        server_default=text("0"),
+        default=1,
+        server_default=text("1"),
     )
 
     score_descriptors_existing: Mapped[int] = mapped_column(
@@ -430,6 +430,11 @@ class Judge(Base):
         back_populates="judge",
         passive_deletes=True,
     )
+
+    __mapper_args__ = {
+        "polymorphic_on": load_extended,
+        "polymorphic_identity": 0,
+    }
 
 
 Index("idx_judge_label", Judge.label)
