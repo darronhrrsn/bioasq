@@ -417,6 +417,10 @@ class Judge(Base):
         passive_deletes=True,
     )
 
+    __mapper_args__ = {
+        "polymorphic_on": label,
+    }
+
 
 Index("idx_judge_label", Judge.label)
 
