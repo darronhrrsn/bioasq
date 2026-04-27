@@ -387,7 +387,13 @@ class Judge(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
     label: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
-    model_id: Mapped[str] = mapped_column(Text, nullable=False)
+
+    model_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("model.id"),
+        nullable=False,
+    )
+
     notes: Mapped[Optional[str]] = mapped_column(Text)
 
     load_extended: Mapped[int] = mapped_column(
@@ -403,6 +409,8 @@ class Judge(Base):
         default=datetime.utcnow,
         server_default=text("CURRENT_TIMESTAMP"),
     )
+
+    model: Mapped["Model"] = relationship()
 
     judge_scores: Mapped[list["JudgeScore"]] = relationship(
         back_populates="judge",
